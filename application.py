@@ -26,7 +26,7 @@ with mysql.connector.connect(host=host,user=user,password=password,db=db) as con
     cursor=conn.cursor(buffered=True)
     cursor.execute('create table if not exits survey(sid varchar(9),time int,url varchar(100),date timestamp default now() on update now())')
 cursor.execute('create table if not exits formdata(username varchar(30),email varchar(30) primary key,q1 int,q2 varchar(5),q3 int,q4 varchar(5),q5 int,q6 varchar(5),q7 int,q8 int,q9 varchar(15),q10 varchar(100))')    
-
+mydb=mysql.connector.connect(host=host,user=user,password=password,db=db)
 @app.route('/')
 def index():
     return render_template('title.html')
