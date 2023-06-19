@@ -1,7 +1,7 @@
-from flask import Flask,redirect,url_for,render_template,request,flash,abort,session
+from flask import Flask, redirect, url_for, render_template, request, flash, abort, session
 from flask_session import Session
 import matplotlib.pyplot as plt
-from key import secret_key,salt1,salt2,salt3
+from key import secret_key, salt1, salt2, salt3
 from stoken import token
 import flask_excel as excel
 from cmail import sendmail
@@ -11,22 +11,22 @@ import random
 import string
 import os
 
-app=Flask(__name__)
-app.secret_key=secret_key
-app.config['SESSION_TYPE']='filesystem'
+app = Flask(__name__)
+app.secret_key = secret_key
+app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 excel.init_excel(app)
-#mydb=mysql.connector.connect(host='localhost',user='root',password='sgnk@143',db='feed')
-db=os.environ['RDS_DB_NAME']
-user=os.environ['RDS_USERNAME']
-password=os.environ['RDS_PASSWORD']
-host=os.environ['RDS_HOSTNAME']
-port=os.environ['RDS_PORT']
-with mysql.connector.connect(host=host,user=user,password=password,db=db) as conn:
-    cursor=conn.cursor(buffered=True)
-    cursor.execute('create table if not exits survey(sid varchar(9),time int,url varchar(100),date timestamp default now() on update now())')
-    cursor.execute('create table if not exits formdata(username varchar(30),email varchar(30) primary key,q1 int,q2 varchar(5),q3 int,q4 varchar(5),q5 int,q6 varchar(5),q7 int,q8 int,q9 varchar(15),q10 varchar(100))')    
-mydb=mysql.connector.connect(host=host,user=user,password=password,db=db)
+# mydb = mysql.connector.connect(host='localhost', user='root', password='sgnk@143', db='feed')
+db = os.environ['RDS_DB_NAME']
+user = os.environ['RDS_USERNAME']
+password = os.environ['RDS_PASSWORD']
+host = os.environ['RDS_HOSTNAME']
+port = os.environ['RDS_PORT']
+with mysql.connector.connect(host=host, user=user, password=password, db=db) as conn:
+    cursor = conn.cursor(buffered=True)
+    cursor.execute('CREATE TABLE IF NOT EXISTS survey(sid varchar(9), time int, url varchar(100), date timestamp default now() on update now())')
+    cursor.execute('CREATE TABLE IF NOT EXISTS formdata(username varchar(30), email varchar(30) primary key, q1 int, q2 varchar(5), q3 int, q4 varchar(5), q5 int, q6 varchar(5), q7 int, q8 int, q9 varchar(15), q10 varchar(100))')
+mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
 @app.route('/')
 def index():
     return render_template('title.html')
