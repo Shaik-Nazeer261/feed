@@ -24,7 +24,7 @@ host = os.environ['RDS_HOSTNAME']
 port = os.environ['RDS_PORT']
 with mysql.connector.connect(host=host, user=user, password=password, db=db) as conn:
     cursor = conn.cursor(buffered=True)
-    cursor.execute('CREATE TABLE IF NOT EXISTS  users(username varchar(15) primary  key,email varchar(80) unique,password varchar(15),email_status enum('confirmed','not confirmed') default 'not confirmed')')
+    cursor.execute('CREATE TABLE IF NOT EXISTS users(username varchar(15) primary  key,email varchar(80) unique,password varchar(15),email_status enum("confirmed","not confirmed"))')
     cursor.execute('CREATE TABLE IF NOT EXISTS survey(sid varchar(9), time int, url varchar(100), date timestamp default now() on update now())')
     cursor.execute('CREATE TABLE IF NOT EXISTS formdata(username varchar(30), email varchar(30) primary key, q1 int, q2 varchar(5), q3 int, q4 varchar(5), q5 int, q6 varchar(5), q7 int, q8 int, q9 varchar(15), q10 varchar(100))')
 mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
