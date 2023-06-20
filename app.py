@@ -302,7 +302,7 @@ def forgot():
 def reset(token):
     try:
         serializer=URLSafeTimedSerializer(secret_key)
-        email=serializer.loads(token,salt=salt2)
+        email=serializer.loads(token,salt=salt1)
     except:
     
         abort(404,'Link Expired')
