@@ -1,7 +1,7 @@
-from flask import Flask, redirect, url_for, render_template, request, flash, abort, session
+from flask import Flask,redirect,url_for,render_template,request,flash,abort,session
 from flask_session import Session
 import matplotlib.pyplot as plt
-from key import secret_key, salt1, salt2, salt3
+from key import secret_key,salt1,salt2,salt3
 from stoken import token
 import flask_excel as excel
 from cmail import sendmail
@@ -11,12 +11,12 @@ import random
 import string
 import os
 
-app = Flask(__name__)
-app.secret_key = secret_key
-app.config['SESSION_TYPE'] = 'filesystem'
+app=Flask(_name_)
+app.secret_key=secret_key
+app.config['SESSION_TYPE']='filesystem'
 Session(app)
 excel.init_excel(app)
-#mydb = mysql.connector.connect(host='localhost', user='root', password='sgnk@143', db='feed')
+#mydb=mysql.connector.connect(host='localhost',user='root',password='Harika',db='ifs')
 db = os.environ['RDS_DB_NAME']
 user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
@@ -68,31 +68,32 @@ def login():
 
 @app.route('/time',methods=['GET','POST'])
 def time():
-    if request.method=="POST":
-        username=session.get('user')
-        time=int(request.form['timestamp'])
-        sid = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(5)])
-        url=url_for('feed',sid=sid,time=time,token=token(sid,salt=salt3),_external=True)
-        cursor=mydb.cursor(buffered=True)
-        cursor.execute('insert into survey(uname,sid,url,time) values(%s,%s,%s,%s)',[username,sid,url,time])
-        mydb.commit()
-        print(type(time))
-        return render_template("homepage.html")
-    else:
-        return render_template("timestamp.html")
+    
+        if request.method=="POST":
+            username=session.get("user")
+            time=int(request.form['timestamp'])
+            cursor=mydb.cursor(buffered=True)
+            cursor.execute("select email from users where username=%s",[username])
+            email=cursor.fetchone()[0]
+            sid = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(5)])
+            url=url_for('feed',time=time,token=token(email,salt=salt3),_external=True)
+            cursor=mydb.cursor(buffered=True)
+            cursor.execute('insert into survey(uname,sid,url,time) values(%s,%s,%s,%s)',[username,sid,url,time])
+            mydb.commit()
+            print(type(time))
+            return render_template("homepage.html")
+        else:
+            return render_template("timestamp.html")
+  
 
-
-
-
-
-@app.route('/feedback/<token>/<sid>/<time>',methods=['GET','POST'])
-def feed(token,sid,time):
+@app.route('/feed/<token>/<time>',methods=['GET','POST'])
+def feed(token,time):
     #cursor=mydb.cursor(buffered=True)
     #cursor.execute("select time from survey where sid=%s",[sid])
     #max_age=cursor.fetchone()[0]
     try:
         serializer=URLSafeTimedSerializer(secret_key)
-        sid=serializer.loads(token,salt=salt3,max_age=int(time))
+        email=serializer.loads(token,salt=salt3,max_age=int(time))
     except Exception as e:
         print(e)
         abort(404,'Link Expired')
@@ -129,33 +130,22 @@ def feed(token,sid,time):
         else:
             return render_template('feedback.html')
 
-
 @app.route('/sfeed')
 def sfeed():
     return render_template("sfeed.html")
-
-
 
 @app.route('/view')
 def view():
     if session.get('user'):
         username=session.get('user')
-
         cursor=mydb.cursor(buffered=True)
         cursor.execute('select sid,url,date from survey where uname=%s',[username])
+      
         data1=cursor.fetchall()
         return render_template('table.html',data1=data1)
-        
-
-
-
-
-
-
-
-
-
-
+    else:
+        return render_template("login.html")
+    
 @app.route('/getnotesdata')
 def getdata():
     if session.get('user'):
@@ -167,7 +157,6 @@ def getdata():
         array_data=[list(i) for i in data]
         array_data.insert(0,columns)
         return excel.make_response_from_array(array_data,'xlsx',filename='feedbackdata')
-            
     else:
         return redirect(url_for('login'))
 
@@ -270,7 +259,7 @@ def confirm(token):
             flash('Email confirmation success')
             return redirect(url_for('login'))
 
-@app.route('/forget',methods=['GET','POST'])
+@app.route('/forgot',methods=['GET','POST'])
 def forgot():
     if request.method=='POST':
         email=request.form['email']
@@ -288,7 +277,7 @@ def forgot():
                 return render_template('forgot.html')
             else:
                 subject='Forget Password'
-                confirm_link=url_for('reset',token=token(email,salt=salt1),_external=True)
+                confirm_link=url_for('reset',token=token(email,salt=salt2),_external=True)
                 body=f"Use this link to reset your password-\n\n{confirm_link}"
                 sendmail(to=email,body=body,subject=subject)
                 flash('Reset link sent check your email')
@@ -302,7 +291,7 @@ def forgot():
 def reset(token):
     try:
         serializer=URLSafeTimedSerializer(secret_key)
-        email=serializer.loads(token,salt=salt1)
+        email=serializer.loads(token,salt=salt2)
     except:
     
         abort(404,'Link Expired')
@@ -328,6 +317,5 @@ def logout():
         return redirect(url_for('login'))
     else:
         return redirect(url_for('login'))
-
 if __name__=="__main__":
     app.run()
