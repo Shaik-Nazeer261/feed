@@ -70,11 +70,12 @@ def login():
 def time():
     if session.get('user'):
         if request.method=="POST":
+            username=session.get('user')
             time=int(request.form['timestamp'])
             sid = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(5)])
             url=url_for('feed',sid=sid,token=token(sid,salt=salt3),_external=True)
             cursor=mydb.cursor(buffered=True)
-            cursor.execute('insert into survey(sid,url,time) values(%s,%s,%s)',[sid,url,time])
+            cursor.execute('insert into survey(uname,sid,url,time) values(%s,%s,%s,%s)',[username,sid,url,time])
             mydb.commit()
             print(type(time))
             return render_template("homepage.html")
@@ -141,8 +142,10 @@ def sfeed():
 @app.route('/view')
 def view():
     if session.get('user'):
+        username=session.get('user')
+
         cursor=mydb.cursor(buffered=True)
-        cursor.execute('select sid,url,date from survey')
+        cursor.execute('select sid,url,date from survey where uname=%s',[username])
         data1=cursor.fetchall()
         return render_template('table.html',data1=data1)
         
