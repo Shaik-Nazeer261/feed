@@ -73,7 +73,7 @@ def time():
             username=session.get('user')
             time=int(request.form['timestamp'])
             sid = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(5)])
-            url=url_for('feed',sid=sid,token=token(sid,salt=salt3),_external=True)
+            url=url_for('feed',sid=sid,time=time,token=token(sid,salt=salt3),_external=True)
             cursor=mydb.cursor(buffered=True)
             cursor.execute('insert into survey(uname,sid,url,time) values(%s,%s,%s,%s)',[username,sid,url,time])
             mydb.commit()
@@ -81,21 +81,19 @@ def time():
             return render_template("homepage.html")
         else:
             return render_template("timestamp.html")
-    else:
-        return render_template('login.html')
 
 
 
 
 
-@app.route('/feedback/<token>/<sid>',methods=['GET','POST'])
-def feed(token,sid):
-    cursor=mydb.cursor(buffered=True)
-    cursor.execute("select time from survey where sid=%s",[sid])
-    max_age=cursor.fetchone()[0]
+@app.route('/feedback/<token>/<sid>/<time>',methods=['GET','POST'])
+def feed(token,sid,time):
+    #cursor=mydb.cursor(buffered=True)
+    #cursor.execute("select time from survey where sid=%s",[sid])
+    #max_age=cursor.fetchone()[0]
     try:
         serializer=URLSafeTimedSerializer(secret_key)
-        sid=serializer.loads(token,salt=salt3,max_age=max_age)
+        sid=serializer.loads(token,salt=salt3,max_age=int(time))
     except Exception as e:
         print(e)
         abort(404,'Link Expired')
