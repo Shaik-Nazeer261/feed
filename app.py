@@ -288,7 +288,7 @@ def forgot():
                 return render_template('forgot.html')
             else:
                 subject='Forget Password'
-                confirm_link=url_for('reset',token=token(email,salt=salt2),_external=True)
+                confirm_link=url_for('reset',token=token(email,salt=salt1),_external=True)
                 body=f"Use this link to reset your password-\n\n{confirm_link}"
                 sendmail(to=email,body=body,subject=subject)
                 flash('Reset link sent check your email')
