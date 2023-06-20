@@ -25,7 +25,7 @@ port = os.environ['RDS_PORT']
 with mysql.connector.connect(host=host, user=user, password=password, db=db) as conn:
     cursor = conn.cursor(buffered=True)
     cursor.execute('CREATE TABLE IF NOT EXISTS users(username varchar(15) primary  key,email varchar(80) unique,password varchar(15),email_status enum("confirmed","not confirmed") default "not confirmed")')
-    cursor.execute('CREATE TABLE IF NOT EXISTS survey(uname varchar(15),sid varchar(9), time int, url varchar(100), date timestamp default now() on update now(),foreign key(uname) references users(username))')
+    cursor.execute('CREATE TABLE IF NOT EXISTS survey(sid varchar(9), time int, url varchar(100), date timestamp default now() on update now())')
     cursor.execute('CREATE TABLE IF NOT EXISTS formdata(username varchar(30), email varchar(30) primary key, q1 int, q2 varchar(5), q3 int, q4 varchar(5), q5 int, q6 varchar(5), q7 int, q8 int, q9 varchar(15), q10 varchar(100))')
 mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
 
@@ -70,12 +70,11 @@ def login():
 def time():
     if session.get('user'):
         if request.method=="POST":
-            username=session.get('user')
             time=int(request.form['timestamp'])
             sid = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(5)])
             url=url_for('feed',sid=sid,token=token(sid,salt=salt3),_external=True)
             cursor=mydb.cursor(buffered=True)
-            cursor.execute('insert into survey(uname,sid,url,time) values(%s,%s,%s,%s)',[username,sid,url,time])
+            cursor.execute('insert into survey(sid,url,time) values(%s,%s,%s)',[sid,url,time])
             mydb.commit()
             print(type(time))
             return render_template("homepage.html")
@@ -145,7 +144,7 @@ def view():
         username=session.get('user')
 
         cursor=mydb.cursor(buffered=True)
-        cursor.execute('select sid,url,date from survey where uname=%s',[username])
+        cursor.execute('select sid,url,date from survey')
         data1=cursor.fetchall()
         return render_template('table.html',data1=data1)
         
