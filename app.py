@@ -16,7 +16,7 @@ app.secret_key = secret_key
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 excel.init_excel(app)
-# mydb = mysql.connector.connect(host='localhost', user='root', password='sgnk@143', db='feed')
+#mydb = mysql.connector.connect(host='localhost', user='root', password='sgnk@143', db='feed')
 db = os.environ['RDS_DB_NAME']
 user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
