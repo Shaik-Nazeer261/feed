@@ -10,7 +10,6 @@ import mysql.connector
 import random
 import string
 import os
-import io import BytesIO
 
 app=Flask(__name__)
 app.secret_key=secret_key
@@ -318,6 +317,6 @@ def logout():
         return redirect(url_for('login'))
     else:
         return redirect(url_for('login'))
-        
+
 if _name=="main_":
     app.run()
