@@ -184,8 +184,7 @@ def home():
         status=cursor.fetchone()[0]
         cursor.close()
         if status=='confirmed':
-            cursor.execute('delete from survey')
-            cursor.execute('delete from formdata')
+            
             return render_template('homepage.html')
         else:
             return redirect(url_for('inactive'))
