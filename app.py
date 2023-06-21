@@ -147,7 +147,7 @@ def getdata(nid):
         username=session.get('user')
         cursor=mydb.cursor(buffered=True)
         columns=['username','email','q1','q2','q3','q4','q5','q6','q7','q8','q9','q10']
-        cursor.execute('select username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10 from formdata where fname=%s and sid=%s',[username,nid])
+        cursor.execute('select username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10 from formdata where username=%s and sid=%s',[username,nid])
         data=cursor.fetchall()
         array_data=[list(i) for i in data]
         array_data.insert(0,columns)
