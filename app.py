@@ -10,7 +10,6 @@ import mysql.connector
 import random
 import string
 import os
-
 app=Flask(__name__)
 app.secret_key=secret_key
 app.config['SESSION_TYPE']='filesystem'
