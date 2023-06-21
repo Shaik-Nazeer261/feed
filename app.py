@@ -70,7 +70,7 @@ def login():
 def time():
     
         if request.method=="POST":
-            username=session.get("user")
+            username=session.get('user')
             time=int(request.form['timestamp'])
             cursor=mydb.cursor(buffered=True)
             cursor.execute("select email from users where username=%s",[username])
@@ -99,6 +99,7 @@ def feed(token,time):
         abort(404,'Link Expired')
     else:
         if request.method=="POST":
+            uname=session.get('user')
             username=request.form['name']
             email=request.form['email']
             q1=request.form['question1']
@@ -120,7 +121,7 @@ def feed(token,time):
             else:
                 try:
                     cursor=mydb.cursor(buffered=True)
-                    cursor.execute('insert into formdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',[username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10])
+                    cursor.execute('insert into formdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',[uname,username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10])
                     mydb.commit()
                     return render_template("feedbackmsg.html")
                 except Exception as e:
