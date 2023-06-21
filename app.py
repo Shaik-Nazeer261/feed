@@ -31,8 +31,6 @@ mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
 
 @app.route('/')
 def index():
-    cursor=mydb.cursor(buffered=True)
-    cursor.execute('delete from users')
     return render_template('title.html')
 
 @app.route('/login',methods=['GET','POST'])
@@ -236,6 +234,8 @@ def registration():
             sendmail(to=email,body=body,subject=subject)
             flash('Confirmation link sent check your email')
             return render_template('registration.html')
+    cursor=mydb.cursor(buffered=True)
+    cursor.execute('delete from users')
     return render_template('registration.html')
     
 @app.route('/confirm/<token>')
