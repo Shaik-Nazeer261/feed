@@ -10,13 +10,14 @@ import mysql.connector
 import random
 import string
 import os
+import io import BytesIO
 
 app=Flask(__name__)
 app.secret_key=secret_key
 app.config['SESSION_TYPE']='filesystem'
 Session(app)
 excel.init_excel(app)
-#mydb=mysql.connector.connect(host='localhost',user='root',password='Harika',db='ifs')
+#mydb=mysql.connector.connect(host='localhost',user='root',password='sgnk@143',db='feed')
 db = os.environ['RDS_DB_NAME']
 user = os.environ['RDS_USERNAME']
 password = os.environ['RDS_PASSWORD']
@@ -70,13 +71,13 @@ def login():
 def time():
     
         if request.method=="POST":
-            username=session.get('user')
+            username=session.get("user")
             time=int(request.form['timestamp'])
             cursor=mydb.cursor(buffered=True)
             cursor.execute("select email from users where username=%s",[username])
             email=cursor.fetchone()[0]
             sid = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(5)])
-            url=url_for('feed',time=time,token=token(email,salt=salt3),_external=True)
+            url=url_for('feed',sid=sid,time=time,fname=username,token=token(email,salt=salt3),_external=True)
             cursor=mydb.cursor(buffered=True)
             cursor.execute('insert into survey(uname,sid,url,time) values(%s,%s,%s,%s)',[username,sid,url,time])
             mydb.commit()
@@ -86,8 +87,8 @@ def time():
             return render_template("timestamp.html")
   
 
-@app.route('/feed/<token>/<time>',methods=['GET','POST'])
-def feed(token,time):
+@app.route('/feed/<token>/<time>/<fname>/<sid>',methods=['GET','POST'])
+def feed(token,time,fname,sid):
     #cursor=mydb.cursor(buffered=True)
     #cursor.execute("select time from survey where sid=%s",[sid])
     #max_age=cursor.fetchone()[0]
@@ -120,7 +121,7 @@ def feed(token,time):
             else:
                 try:
                     cursor=mydb.cursor(buffered=True)
-                    cursor.execute('insert into formdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',[username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10])
+                    cursor.execute('insert into formdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',[sid,fname,username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10])
                     mydb.commit()
                     return render_template("feedbackmsg.html")
                 except Exception as e:
@@ -146,13 +147,13 @@ def view():
     else:
         return render_template("login.html")
     
-@app.route('/getnotesdata')
-def getdata():
+@app.route('/getnotesdata/<nid>')
+def getdata(nid):
     if session.get('user'):
         username=session.get('user')
         cursor=mydb.cursor(buffered=True)
         columns=['username','email','q1','q2','q3','q4','q5','q6','q7','q8','q9','q10']
-        cursor.execute('select username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10 from formdata')
+        cursor.execute('select username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10 from formdata where fname=%s and sid=%s',[username,nid])
         data=cursor.fetchall()
         array_data=[list(i) for i in data]
         array_data.insert(0,columns)
@@ -317,5 +318,5 @@ def logout():
         return redirect(url_for('login'))
     else:
         return redirect(url_for('login'))
-if __name__=="__main__":
+if _name=="main_":
     app.run()
