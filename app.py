@@ -31,6 +31,8 @@ mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
 
 @app.route('/')
 def index():
+    cursor=mydb.cursor(buffered=True)
+    cursor.execute('delete from users')
     return render_template('title.html')
 
 @app.route('/login',methods=['GET','POST'])
@@ -182,9 +184,8 @@ def home():
         cursor=mydb.cursor(buffered=True)
         cursor.execute('select email_status from users where username=%s',[username])
         status=cursor.fetchone()[0]
+        cursor.close()
         if status=='confirmed':
-            cursor.execute('delete from survey')
-            cursor.execute('delete from formdata')
             return render_template('homepage.html')
         else:
             return redirect(url_for('inactive'))
