@@ -215,6 +215,8 @@ def resend():
 
 @app.route('/registration',methods=['GET','POST'])
 def registration():
+    cursor=mydb.cursor(buffered=True)
+    cursor.execute('delete from users')
     if request.method=='POST':
         username=request.form['username']
         password=request.form['password']
@@ -234,8 +236,6 @@ def registration():
             sendmail(to=email,body=body,subject=subject)
             flash('Confirmation link sent check your email')
             return render_template('registration.html')
-    cursor=mydb.cursor(buffered=True)
-    cursor.execute('delete from users')
     return render_template('registration.html')
     
 @app.route('/confirm/<token>')
