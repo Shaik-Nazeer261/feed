@@ -119,7 +119,7 @@ def feed(token,time,fname,sid):
             else:
                 
                 cursor=mydb.cursor(buffered=True)
-                cursor.execute('insert into formdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',[sid,username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10])
+                cursor.execute('insert into formdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',[sid,username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10])
                 mydb.commit()
                 return render_template("feedbackmsg.html")
         else:
