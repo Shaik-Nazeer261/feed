@@ -117,15 +117,11 @@ def feed(token,time,fname,sid):
                 flash("feedback alredy given with this email")
                 return render_template('feedback.html')
             else:
-                try:
-                    cursor=mydb.cursor(buffered=True)
-                    cursor.execute('insert into formdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',[sid,fname,username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10])
-                    mydb.commit()
-                    return render_template("feedbackmsg.html")
-                except Exception as e:
-                    print(e)
-                    flash("review should be less than 100 words")
-                    return render_template('feedback.html')
+                
+                cursor=mydb.cursor(buffered=True)
+                cursor.execute('insert into formdata values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',[sid,fname,username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10])
+                mydb.commit()
+                return render_template("feedbackmsg.html")
         else:
             return render_template('feedback.html')
 
