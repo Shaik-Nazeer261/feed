@@ -317,5 +317,5 @@ def logout():
     else:
         return redirect(url_for('login'))
 
-if _name_=="__main__":
+if __name__=="__main__":
     app.run()
