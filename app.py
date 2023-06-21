@@ -215,8 +215,6 @@ def resend():
 
 @app.route('/registration',methods=['GET','POST'])
 def registration():
-    cursor=mydb.cursor(buffered=True)
-    cursor.execute('delete from users')
     if request.method=='POST':
         username=request.form['username']
         password=request.form['password']
