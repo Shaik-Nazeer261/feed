@@ -57,7 +57,7 @@
                 <td>{{i[0]}}</td>
                 <td><a href="{{i[1]}}">{{i[1]}}</a></td>
                 <td>{{i[2]}}</td>
-                <td><a href="{{url_for('getdata')}}">get survey data</a></td>
+                <td><a href="{{url_for('getdata',nid=i[0])}}">get survey data</a></td>
             </tr>
             {% endfor %}
         </tbody>
