@@ -26,7 +26,7 @@ with mysql.connector.connect(host=host, user=user, password=password, db=db) as 
     cursor = conn.cursor(buffered=True)
     cursor.execute('CREATE TABLE IF NOT EXISTS users(username varchar(15) primary  key,email varchar(80) unique,password varchar(15),email_status enum("confirmed","not confirmed") default "not confirmed")')
     cursor.execute('CREATE TABLE IF NOT EXISTS survey(uname varchar(15),sid varchar(9), time int, url varchar(50), date timestamp default now() on update now(),foreign key(uname) references users(username))')
-    cursor.execute('CREATE TABLE IF NOT EXISTS formdata(username varchar(30), email varchar(30) primary key, q1 int, q2 varchar(5), q3 int, q4 varchar(5), q5 int, q6 varchar(5), q7 int, q8 int, q9 varchar(15), q10 varchar(100))')
+    cursor.execute('CREATE TABLE IF NOT EXISTS formdata(uname varchar(15),username varchar(30), email varchar(30) primary key, q1 int, q2 varchar(5), q3 int, q4 varchar(5), q5 int, q6 varchar(5), q7 int, q8 int, q9 varchar(15), q10 varchar(100))')
 mydb = mysql.connector.connect(host=host, user=user, password=password, db=db)
 
 @app.route('/')
@@ -152,7 +152,7 @@ def getdata():
         username=session.get('user')
         cursor=mydb.cursor(buffered=True)
         columns=['username','email','q1','q2','q3','q4','q5','q6','q7','q8','q9','q10']
-        cursor.execute('select username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10 from formdata')
+        cursor.execute('select username,email,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10 from formdata where uname=%s',[username])
         data=cursor.fetchall()
         array_data=[list(i) for i in data]
         array_data.insert(0,columns)
