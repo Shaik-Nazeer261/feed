@@ -5,6 +5,7 @@
 body {
     background-image:url('https://highspark.co/wp-content/uploads/Feature_effective-feedback-forms.005-1.jpeg');
     background-size: cover;
+    background-repeat: no-repeat;
 
 }
 .btnstyle {
